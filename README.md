@@ -1,45 +1,62 @@
-# FP&A Executive Dashboard — LATAM 2024-2025
+# FP&A Variance Dashboard — Power BI
 
-Interactive FP&A executive dashboard analyzing budget variance, YoY growth 
-and monthly trends across 2 regions and 5 LATAM countries. Built with Power BI.
+Interactive Power BI dashboard for multi-country expense analysis (Actual vs. Budget), built on a star schema data model with DAX time intelligence, variance analysis, and automated data quality checks.
 
-![Dashboard Preview](Captura%20de%20pantalla%202026-08-02%20201634.png)
+This is the third piece of a three-project portfolio applying the same synthetic FP&A dataset across SQL, Python, and Power BI:
+- 🔗 [SQL project](https://github.com/julianissidoro/fpa-variance-analysis) — BigQuery variance analysis
+- 🔗 [Python project](https://github.com/julianissidoro/fpa-variance-analysis-python) — automated reporting pipeline
+- 📊 **This project** — Power BI interactive dashboard
 
-## Business Context
+## Overview
 
-Multi-country finance operations require consolidated visibility for executive 
-decision-making. This dashboard enables real-time analysis of budget execution, 
-YoY performance and country-level variance — designed for CFO-level reporting.
+The dashboard analyzes expense data across 5 LATAM countries, 4 departments, and 24 months (2024–2025), comparing Actual spend against Budget to surface variance, trend, and month-over-month movement — the kind of reporting an FP&A team reviews monthly.
 
-## Dataset
+**Dataset:** synthetic, built for portfolio purposes (960 rows: 5 countries × 4 departments × 12 months × 2 years × Actual/Budget).
 
-- **Source**: Google BigQuery export (CSV)
-- **Coverage**: 5 countries, 4 departments, 24 months (2024–2025), Actual vs Budget
-- **Tables**: expenses (960 rows), departments (20 rows)
+## Pages
 
-## Dashboard Components
+**1. Summary — YoY Trend**
+KPI cards (Actual, Budget, Variance, YoY — anchored to 2025 vs. 2024), monthly trend by year, expense concentration by country/department, and Actual vs. Budget comparison by country.
 
-| Visual | Description |
+**2. Actuals Variance — Analysis**
+Variance ranking by department, month-over-month variance by country and department, with conditional-formatted heatmaps to spot deviations at a glance.
+
+**3. Data Quality**
+Automated audit measure that flags any country/department/month combination with an incomplete Actual/Budget pair — a data integrity check before the report goes out.
+
+## Data model
+
+Star schema: one fact table (`fact_expenses`, long/unpivoted format — one row per Actual or Budget entry, not two columns side by side) related to four dimension tables (`dim_country`, `dim_department`, `dim_type`, and a calculated `Dim_Calendario` date table marked for time intelligence).
+
+## Key DAX techniques
+
+- `CALCULATE()` + `REMOVEFILTERS()` — measures that stay accurate regardless of active slicers
+- `DIVIDE()` with explicit `BLANK()` handling — prevents misleading 0% or error values when a denominator is missing
+- `TOTALYTD()`, `SAMEPERIODLASTYEAR()`, `PREVIOUSMONTH()` — time intelligence over a properly marked date table
+- `RANKX()` — dynamic ranking of departments by variance
+- `SUMMARIZE()` + `ADDCOLUMNS()` + `COUNTROWS()` — row-level data quality audit
+- `COALESCE()` — guards against silent `BLANK()` propagation in aggregate measures
+
+## Files in this repo
+
+| File | Description |
 |---|---|
-| KPI Cards | Total Actual, Total Budget, Variance %, YoY Growth |
-| Bar Chart | Budget Variance % by Country |
-| Line Chart | Monthly Actual Spend: 2024 vs 2025 |
-| Summary Table | Country-level Actual, Budget, YoY abs, execution tracker |
-| Slicers | Filter by Year, Country and Quarter |
+| `fpa_variance_dashboard.pbix` | Full Power BI file — open in Power BI Desktop (free) to explore the model and DAX measures |
+| `fpa_variance_dashboard.pdf` | Static export of all report pages — no software required to view |
+| `/screenshots` | Preview images of the dashboard |
 
-## DAX Measures
+## Preview
 
-- `Total_Actual` / `Total_Budget` — filtered aggregations with CALCULATE
-- `Variance_pct` — DIVIDE for safe division
-- `YoY_Growth` — year-over-year % growth
-- `Total_Actual_PY` — prior year comparison with DATEADD
-- `LATAM_SUR_ACTUAL` — region-locked measure with REMOVEFILTERS
-- `perc_exp` — country share of total with ALL context override
-- `tracker` — conditional label with IF()
+**Summary — YoY Trend**
+![Summary page](screenshots/summary_yoy_trend.png)
 
-## Tech Stack
+**Actuals Variance**
+![Variance page](screenshots/actuals_variance.png)
 
-- Power BI Desktop
-- DAX (Data Analysis Expressions)
-- Power Query (M language)
-- GitHub for version control
+## Tools
+
+Power BI Desktop · DAX · Power Query (M) · Star schema data modeling
+
+## Author
+
+Julian — Finance Business Partner, 10+ years in FP&A and multi-country financial consolidation, upskilling in data analytics (SQL, Python, Power BI).
