@@ -48,10 +48,10 @@ Star schema: one fact table (`fact_expenses`, long/unpivoted format — one row 
 ## Preview
 
 **Summary — YoY Trend**
-![Summary page](screenshots/summary_yoy_trend.png)
+![Summary page](screenshots/fpa_variance_dashboard_img1.png)
 
 **Actuals Variance**
-![Variance page](screenshots/actuals_variance.png)
+![Variance page](screenshots/fpa_variance_dashboard_img2.png)
 
 ## Tools
 
